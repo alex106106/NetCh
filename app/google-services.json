@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "762707427475",
+    "project_id": "netch-9ee18",
+    "storage_bucket": "netch-9ee18.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:762707427475:android:5ce3da5c88d526fb088d66",
+        "android_client_info": {
+          "package_name": "com.example.netch"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "762707427475-pv61m587h7cj6c88oa7dtr7b8f7a0tdp.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAUrUAFuesDBK4GKah3RzrTTzpEReWL1dA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "762707427475-pv61m587h7cj6c88oa7dtr7b8f7a0tdp.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
