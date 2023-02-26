@@ -1,45 +1,83 @@
 package com.example.netch.ui.viewModel
 
 import androidx.compose.runtime.*
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import com.example.netch.domain.getFeedUseCase
-import com.example.netch.domain.items.feedItems
+import androidx.lifecycle.*
 import com.example.netch.remote.models.feedModel
+import com.example.netch.DAO.DAO
+import com.example.netch.repository.DAORepository
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import java.util.*
 
-class FeedViewModel constructor(private val getFeedUseCase: getFeedUseCase): ViewModel() {
+class FeedViewModel  : ViewModel() {
 
-    private val _postFeed = MutableLiveData<List<feedItems>>()
-    val postFeed: LiveData<List<feedItems>>get() = _postFeed
-    init {
-        getPostFeed()
-    }
+    private val _feedList = MutableStateFlow(emptyList<feedModel>())
+    val feedList: StateFlow<List<feedModel>> = _feedList.asStateFlow()
 
-    private fun getPostFeed() {
+    init{
         viewModelScope.launch {
-            try {
-                val post = getFeedUseCase()
-                _postFeed.value = post
-            }catch (e: Exception){}
+            val current = FirebaseAuth.getInstance().currentUser
+            val firebaseRef = FirebaseDatabase.getInstance().getReference("users/"+current?.uid+"/feed/")
+            firebaseRef.addValueEventListener(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    val feedList = mutableListOf<feedModel>()
+                    for (feedSnapshot in snapshot.children) {
+                        val feed = feedSnapshot.getValue(feedModel::class.java)
+                        feedList.add(feed!!)
+                    }
+                    _feedList.value = feedList
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    // Handle error
+                }
+            })
         }
     }
 
-
-
-    private val _name = mutableStateOf("")
-    val name: State<String> = _name
-    fun addToFeed(feedModel: feedModel){
-        var sd = ""
-        val current = FirebaseAuth.getInstance().currentUser
-        val DBR = FirebaseDatabase.getInstance().getReference("users/"+current?.uid+"/feed/" + UUID.randomUUID())
-        val feedModel = feedModel
-        DBR.setValue(feedModel)
-    }
-
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
