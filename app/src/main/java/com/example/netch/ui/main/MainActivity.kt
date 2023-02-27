@@ -18,7 +18,9 @@ import com.example.netch.ui.viewModel.FeedViewModel
 import com.example.netch.ui.viewModel.LoginViewModel
 import com.example.netch.ui.viewModel.RegisterViewModel
 import com.google.firebase.auth.FirebaseUser
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     @RequiresApi(Build.VERSION_CODES.N)
     override fun onCreate(savedInstanceState: Bundle?) {
