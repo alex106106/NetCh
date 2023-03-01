@@ -1,5 +1,7 @@
 package com.example.netch.repository
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.example.netch.DAO.DAO
 import com.example.netch.remote.models.feedModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -11,8 +13,8 @@ class DAORepository @Inject constructor (val DAO: DAO) {
         return DAO.getAllFeeds()
     }
 
-     fun addFeed(feed: feedModel) {
-        DAO.addFeed(feed)
+     fun addFeed(feed: feedModel): LiveData<feedModel> {
+        return DAO.addFeed(feed)
     }
 
     suspend fun updateFeed(feed: feedModel) {

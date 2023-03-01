@@ -1,6 +1,8 @@
 package com.example.netch.DAO
 
 import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.example.netch.remote.FeedDao
 import com.example.netch.remote.models.feedModel
 import com.google.firebase.auth.FirebaseAuth
@@ -11,14 +13,23 @@ import com.google.firebase.database.ValueEventListener
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.tasks.await
+import java.util.*
 import javax.inject.Inject
 
 class DAO @Inject constructor() : FeedDao {
     val current = FirebaseAuth.getInstance().currentUser
     val feedsRef = FirebaseDatabase.getInstance().getReference("users/"+current?.uid+"/feed/")
 
-    override fun addFeed(feed: feedModel) {
-        feedsRef.child(feed.feedPostID).setValue(feed)
+    override fun addFeed(feed: feedModel): LiveData<feedModel> {
+        val result = MutableLiveData<feedModel>()
+        val current = FirebaseAuth.getInstance().currentUser
+        val DBR = FirebaseDatabase.getInstance().getReference("users/"+current?.uid+"/feed/" + UUID.randomUUID())
+        val feedModels = feed
+        DBR.setValue(feedModels).addOnSuccessListener {
+            result.value
+        }.addOnFailureListener {
+        }
+        return result
     }
 
     override suspend fun getFeed(feedPostID: String): feedModel? {

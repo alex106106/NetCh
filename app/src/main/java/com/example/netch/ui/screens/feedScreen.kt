@@ -3,7 +3,6 @@ package com.example.netch.ui.screens
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.runtime.collectAsState
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -15,6 +14,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.*
 import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -23,20 +23,9 @@ import androidx.compose.ui.unit.dp
 import com.example.netch.R
 import com.example.netch.remote.models.feedModel
 import com.example.netch.ui.viewModel.FeedViewModel
-import com.example.netch.util.constant
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.FirebaseDatabase
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.Observer
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.google.firebase.database.ValueEventListener
-import java.util.UUID.randomUUID
 
 
 @Composable
@@ -46,7 +35,7 @@ fun feedScreen(feedViewModel: FeedViewModel) {
     Scaffold(Modifier.background(Color.Black),
         topBar = { topAppBar() },
         content = { contentFeed(feedViewModel) },
-//        floatingActionButton = { floatingButton(feedViewModel = feedViewModel) }
+        floatingActionButton = { floatingButton(feedViewModel = feedViewModel) }
     )
 }
 
@@ -83,9 +72,6 @@ fun contentFeed(feedViewModel: FeedViewModel) {
         }
     }
 }
-
-
-
 @Composable
 fun cardPostFeed() {
     Card(
@@ -137,10 +123,8 @@ fun topAppBar() {
 
 @Composable
 fun floatingButton(feedViewModel: FeedViewModel) {
-    var Tile by remember { mutableStateOf("") }
+    var Title by remember { mutableStateOf("") }
     var Content by remember { mutableStateOf("") }
-    var feedPostID = ""
-
     val showDialog = remember { mutableStateOf(false) }
 
     fun openDialog() {
@@ -149,6 +133,70 @@ fun floatingButton(feedViewModel: FeedViewModel) {
 
     fun closeDialog() {
         showDialog.value = false
+    }
+    // El diálogo
+    if (showDialog.value) {
+        AlertDialog(
+            onDismissRequest = { closeDialog() },
+            title = { Text(text = "Add to feed") },
+            text = {
+                Column {
+                    OutlinedTextField(
+                        value = Title,
+                        onValueChange = { Title = it },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp),
+                        label = { Text(text = "Title") }
+                    )
+                    OutlinedTextField(
+                        value = Content,
+                        onValueChange = { Content = it },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp),
+                        label = { Text(text = "Content") }
+                    )
+                }
+            },
+            confirmButton = {
+
+                val addFeed by feedViewModel.addFeed.observeAsState()
+                Button(
+                    onClick = {
+                            feedViewModel.add(
+                                feed = feedModel(
+                                    addFeed?.name ?: "",
+                                    addFeed?.title ?: "sasdx",
+                                    addFeed?.content ?: "dsax",
+                                    addFeed?.feedPostID ?: ""
+                                )
+                            )
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        backgroundColor = Color.Blue
+                    )
+                ) {
+                    Text(text = "Post", color = Color.White)
+                }
+                Button(
+                    onClick = { closeDialog() },
+                    colors = ButtonDefaults.buttonColors(
+                        backgroundColor = Color.Red
+                    )
+                ) {
+                    Text(
+                        text = "Cerrar",
+                        color = Color.White
+                    )
+                }
+            }
+        )
+    }
+
+    // El botón que abre el diálogo
+    FloatingActionButton(onClick = { openDialog() }) {
+        Text(text = "ADD")
     }
 }
 //    if (showDialog.value) {

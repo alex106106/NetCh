@@ -1,8 +1,6 @@
 package com.example.netch.ui.viewModel
 
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.*
-import com.example.netch.DAO.DAO
 import com.example.netch.remote.models.feedModel
 import com.example.netch.repository.DAORepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -15,16 +13,30 @@ import javax.inject.Inject
 @HiltViewModel
 class FeedViewModel @Inject constructor(
     private val DAO: DAORepository) : ViewModel() {
-
     private val _feedList = MutableStateFlow(emptyList<feedModel>())
     val feedList: StateFlow<List<feedModel>> = _feedList.asStateFlow()
+
+    private val _addFeed = MutableLiveData<feedModel>()
+    val addFeed: LiveData<feedModel>  = _addFeed
+
+
     init {
         viewModelScope.launch {
             val feedList = DAO.getFeeds()
             _feedList.value = feedList
         }
     }
+
+
+    fun add(feed: feedModel) {
+        viewModelScope.launch {
+            val add = DAO.addFeed(feed)
+            _addFeed.value = add.value
+        }
+    }
 }
+
+
 
 
 
