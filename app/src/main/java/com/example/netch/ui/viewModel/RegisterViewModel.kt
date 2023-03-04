@@ -18,7 +18,7 @@ class RegisterViewModel : ViewModel() {
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful){
                         val current = FirebaseAuth.getInstance().currentUser
-                        val DBR = FirebaseDatabase.getInstance().getReference("users/"+current?.uid)
+                        val DBR = FirebaseDatabase.getInstance().getReference("users/"+current?.uid + "/userData")
                         val registerModel = registerModel
                         registerModel.UUID.plus(current?.uid)
                         DBR.setValue(registerModel)

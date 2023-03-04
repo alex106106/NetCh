@@ -8,4 +8,6 @@ data class registerModel (
     val pass: String? = null,
     val name: String? = null,
     val UUID: String? = null
-        )
+        ){
+    constructor() : this("", "", "", "")
+}

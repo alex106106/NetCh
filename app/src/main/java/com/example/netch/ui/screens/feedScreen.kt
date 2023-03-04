@@ -13,6 +13,9 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.*
 import androidx.compose.material.TopAppBar
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
@@ -26,14 +29,17 @@ import com.example.netch.ui.viewModel.FeedViewModel
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.navigation.NavController
+import com.example.netch.remote.models.registerModel
+import com.example.netch.ui.navigation.Screens
 
 
 @Composable
-fun feedScreen(feedViewModel: FeedViewModel) {
+fun feedScreen(feedViewModel: FeedViewModel, navController: NavController) {
 
-    
+
     Scaffold(Modifier.background(Color.Black),
-        topBar = { topAppBar() },
+        topBar = { topAppBar(feedViewModel, navController = navController) },
         content = { contentFeed(feedViewModel) },
         floatingActionButton = { floatingButton(feedViewModel = feedViewModel) }
     )
@@ -45,6 +51,7 @@ fun contentFeed(feedViewModel: FeedViewModel) {
     val feeds by feedViewModel.feedList.collectAsState()
 
     LazyColumn {
+        
         items(feeds) { feed ->
             Column {
                 Card(
@@ -104,17 +111,28 @@ fun cardPostFeed() {
 }
 
 @Composable
-fun topAppBar() {
+fun topAppBar(feedViewModel: FeedViewModel, navController: NavController) {
     TopAppBar(
         title = { Text(text = "App")},
         elevation = 4.dp,
         actions = {
-            Image(painter = painterResource(
-                id = R.drawable.batdroid),
-                contentDescription = null,
-                modifier = Modifier
-                    .padding(5.dp)
-                    .clip(CircleShape))
+            val sas = addFriendDialog()
+            IconButton(onClick = {
+                feedViewModel.addFriend(addFriend = registerModel())
+            }) {
+                Icon(imageVector = Icons.Filled.Add, contentDescription = "menu")
+            }
+            IconButton(onClick = {
+                navController.navigate(Screens.Profile.route)
+            }) {
+                Icon(imageVector = Icons.Filled.Person, contentDescription = "profile")
+            }
+//            Image(painter = painterResource(
+//                id = R.drawable.batdroid),
+//                contentDescription = null,
+//                modifier = Modifier
+//                    .padding(5.dp)
+//                    .clip(CircleShape))
         }
 
     )
@@ -199,56 +217,65 @@ fun floatingButton(feedViewModel: FeedViewModel) {
         Text(text = "ADD")
     }
 }
-//    if (showDialog.value) {
-//        AlertDialog(
-//            onDismissRequest = { closeDialog() },
-//            title = { Text(text = "Add to Feed") },
-//            text = {
-//                Column {
-//                    OutlinedTextField(
-//                        value = Tile,
-//                        onValueChange = { Tile = it },
-//                        modifier = Modifier
-//                            .fillMaxWidth()
-//                            .padding(vertical = 8.dp),
-//                        label = { Text(text = "Title") }
-//                    )
-//                    OutlinedTextField(
-//                        value = Content,
-//                        onValueChange = { Content = it },
-//                        modifier = Modifier
-//                            .fillMaxWidth()
-//                            .padding(vertical = 8.dp),
-//                        label = { Text(text = "Content") }
 
-//            confirmButton = {
-//                Button(onClick = { feedViewModel.addToFeed(
-//                    feedModel = feedModel(
-//                        title = Tile,
-//                        content = Content,
-//                        feedPostID = randomUUID().toString(),
-//                        name = "")) },
-//                colors = ButtonDefaults.buttonColors(
-//                    backgroundColor = Color.Blue
-//                )) {
-//                    Text(text = "Post", color = Color.White)
-//                }
-//                Button(
-//                    onClick = { closeDialog() },
-//                    colors = ButtonDefaults.buttonColors(
-//                        backgroundColor = Color.Red
-//                    )
-//                ) {
-//                    Text(
-//                        text = "Close",
-//                        color = Color.White
-//                    )
-//                }
-//            }
-//        )
-//    }
-//    FloatingActionButton(backgroundColor = Color.Black
-//        ,onClick = { openDialog() }) {
-//        Text(text = "asd")
-//    }
+@Composable
+fun addFriendDialog() {
+    var Email by remember { mutableStateOf("") }
+    val showDialog = remember { mutableStateOf(false) }
+
+    fun openDialog() {
+        showDialog.value = true
+    }
+
+    fun closeDialog() {
+        showDialog.value = false
+    }
+    // El diálogo
+    if (showDialog.value) {
+        AlertDialog(
+            onDismissRequest = { closeDialog() },
+            title = { Text(text = "Add to feed") },
+            text = {
+                Column {
+                    OutlinedTextField(
+                        value = Email,
+                        onValueChange = { Email = it },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp),
+                        label = { Text(text = "Title") }
+                    )
+                }
+            },
+            confirmButton = {
+
+                Button(
+                    onClick = {
+
+
+
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        backgroundColor = Color.Blue
+                    )
+                ) {
+                    Text(text = "Post", color = Color.White)
+                }
+                Button(
+                    onClick = { closeDialog() },
+                    colors = ButtonDefaults.buttonColors(
+                        backgroundColor = Color.Red
+                    )
+                ) {
+                    Text(
+                        text = "Cerrar",
+                        color = Color.White
+                    )
+                }
+            }
+        )
+    }
+
+
+}
 

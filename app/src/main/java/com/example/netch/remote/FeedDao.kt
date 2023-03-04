@@ -13,5 +13,6 @@ interface FeedDao {
     suspend fun getAllFeeds(): List<feedModel>
     fun updateFeed(feed: feedModel)
     fun deleteFeed(feedPostID: String)
-    
+    suspend fun getFeedFriend(): List<feedModel>
+    fun addFriend(addFriend: registerModel)
 }
